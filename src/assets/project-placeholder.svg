@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title">
+  <title id="title">演示视频占位图，暂未接入视频</title>
+  <rect width="1280" height="720" fill="#f4faf9"/>
+  <rect x="40" y="40" width="1200" height="640" rx="8" fill="#fff" stroke="#dcebe8" stroke-width="2"/>
+  <rect x="584" y="248" width="112" height="80" rx="8" fill="none" stroke="#02aab0" stroke-width="4"/>
+  <path d="m632 268 27 20-27 20z" fill="#02aab0"/>
+  <text x="640" y="405" text-anchor="middle" font-family="sans-serif" font-size="34" fill="#272341">演示视频待补充</text>
+  <text x="640" y="452" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#708780">此处预留项目演示区域</text>
+</svg>

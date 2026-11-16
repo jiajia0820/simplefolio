@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" role="img" aria-labelledby="title">
+  <title id="title">个人头像占位图</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1">
+      <stop stop-color="#02aab0"/>
+      <stop offset="1" stop-color="#00cdac"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="8" fill="url(#background)"/>
+  <circle cx="150" cy="150" r="106" fill="none" stroke="#fff" stroke-opacity=".3"/>
+  <text x="150" y="174" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="80" font-weight="700" fill="#fff">JY</text>
+  <text x="150" y="245" text-anchor="middle" font-family="sans-serif" font-size="12" letter-spacing="3" fill="#fff">AI PRODUCT</text>
+</svg>
