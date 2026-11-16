@@ -57,6 +57,17 @@ test("does not include private resume contacts or local document paths", () => {
   assert.doesNotMatch(html, /Your Name|Unknown Developer|Project Title/);
 });
 
+test("placeholder labels retain the original CTA font size", () => {
+  const styles = fs.readFileSync(
+    path.join(root, "src/sass/components/_buttons.scss"),
+    "utf8"
+  );
+  assert.match(
+    styles,
+    /\.cta-placeholder\s*\{[^}]*font-size:\s*\$default-font-size/s
+  );
+});
+
 function animationContext({ available = false, reducedMotion = false } = {}) {
   const removedClasses = [];
   const reveals = [];

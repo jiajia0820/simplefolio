@@ -6,6 +6,9 @@
 
 ## 本地运行
 
+本轮验证环境为 Node.js 24.14.1、npm 11.11.0。
+`.nvmrc` 已对齐该 Node.js 版本。
+
 ```powershell
 npm ci
 npm start -- --host 127.0.0.1
@@ -28,6 +31,9 @@ npm run build
 `Error opening directory`。运行脚本加入 `--no-cache` 避开该问题，
 没有升级或替换原有依赖。代价是再次构建时不复用磁盘缓存。
 
+原仓库自带面向 `main` 分支的 GitHub Pages 工作流，本轮保留且未执行。
+后续发布前，需要核对部署分支、项目页资源子路径和内容公开范围。
+
 ## 主要文件
 
 | 文件                                                         | 用途                             |
@@ -37,6 +43,8 @@ npm run build
 | `src/assets/project-placeholder.svg`                         | 项目演示占位图                   |
 | `src/scripts/scrollReveal.js`                                | 原版动画及静态显示兜底           |
 | `docs/superpowers/specs/2026-11-16-simplefolio-v1-design.md` | 本次范围与验收计划               |
+
+验证结果记录在 `docs/verification.md`。
 
 ## 等待补充的材料
 
