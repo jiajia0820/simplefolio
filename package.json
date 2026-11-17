@@ -6,7 +6,7 @@
   "source": "src/index.html",
   "scripts": {
     "start": "parcel --no-cache",
-    "build": "parcel build --no-cache",
+    "build": "parcel build --no-cache && node scripts/verify-build.cjs",
     "test": "node --test tests/*.test.cjs"
   },
   "repository": {

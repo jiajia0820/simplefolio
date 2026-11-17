@@ -76,9 +76,33 @@ test("placeholder labels use original anchor styling without custom CSS", () => 
   );
 });
 
-test("retains the original sample images and footer design slots", () => {
-  assert.match(html, /src="assets\/profile\.jpg"/);
-  assert.equal((html.match(/src="assets\/project\.jpg"/g) || []).length, 3);
+test("uses approved real images without changing the original media proportions", () => {
+  assert.match(html, /viewBox="300 800 700 700"/);
+  assert.match(html, /href="assets\/media\/portrait-lifestyle\.jpg"/);
+  assert.equal((html.match(/viewBox="0 0 1600 900"/g) || []).length, 3);
+  assert.match(html, /href="assets\/media\/business-agent\.png"/);
+  assert.match(html, /href="assets\/media\/ward-robots\.jpg"/);
+  assert.doesNotMatch(html, /(?:src|href)="assets\/(?:profile|project)\.jpg"/);
+});
+
+test("shows three complete smart-home screens in one landscape frame", () => {
+  const projectStart = html.indexOf("智家清单实机截图");
+  const projectEnd = html.indexOf("</svg>", projectStart);
+  const composition = html.slice(projectStart, projectEnd);
+  assert.equal((composition.match(/<image\b/g) || []).length, 3);
+  for (const name of ["home", "assessment", "plan"]) {
+    assert.match(
+      composition,
+      new RegExp(`href="assets/media/zhijia-${name}\\.jpg"`)
+    );
+  }
+  assert.equal(
+    (composition.match(/preserveAspectRatio="xMidYMid meet"/g) || []).length,
+    3
+  );
+});
+
+test("retains the original footer design slots", () => {
   assert.equal((html.match(/class="github-button"/g) || []).length, 2);
   assert.match(html, /fa-twitter fa-inverse/);
   assert.match(html, /fa-linkedin fa-inverse/);
