@@ -35,4 +35,22 @@ for (const [index, name] of [
   );
 }
 assert.doesNotMatch(html, /(?:src|href)="[^"]*\b(?:profile|project)\.jpg"/i);
-console.log("Production media verified: 4 SVG viewBoxes and 6 bundled images.");
+
+const videoLinks = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+\.mp4)"/gi)].map(
+  (match) => match[1]
+);
+assert.equal(videoLinks.length, 4);
+const videos = [...new Set(videoLinks)];
+assert.equal(videos.length, 2);
+for (const [index, name] of ["zhijia", "business-agent"].entries()) {
+  assert.equal(videos[index], `/assets/media/${name}-demo.mp4`);
+  assert.equal(
+    fs.statSync(path.join(output, videos[index].slice(1))).size,
+    fs.statSync(path.resolve(__dirname, `../src/assets/media/${name}-demo.mp4`))
+      .size,
+    `Incomplete production video: ${videos[index]}`
+  );
+}
+console.log(
+  "Production media verified: 4 SVG viewBoxes, 6 images, and 2 complete videos."
+);

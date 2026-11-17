@@ -25,8 +25,8 @@ test("retains the original Simplefolio section order and three project slots", (
 });
 
 test("keeps missing video, source, and resume assets explicitly unavailable", () => {
-  assert.equal((html.match(/>视频待补充</g) || []).length, 3);
-  assert.equal((html.match(/>源码待补充</g) || []).length, 3);
+  assert.equal((html.match(/>视频待补充</g) || []).length, 1);
+  assert.equal((html.match(/>源码待补充</g) || []).length, 1);
   assert.match(html, /公开版简历待补充/);
   assert.doesNotMatch(html, /<(?:video|iframe)\b/);
   assert.doesNotMatch(html, /(?:src|href)="(?:|#!)"/);
@@ -67,13 +67,44 @@ test("placeholder labels use original anchor styling without custom CSS", () => 
     .filter(
       (tag) => /class="cta-btn\b/.test(tag) && /aria-disabled="true"/.test(tag)
     );
-  assert.equal(anchors.length, 7);
+  assert.equal(anchors.length, 3);
   assert.ok(anchors.every((tag) => !/\bhref=/.test(tag)));
   assert.doesNotMatch(styles, /\.cta-placeholder/);
   assert.doesNotMatch(
     html,
     /cta-placeholder|profile-placeholder|project-placeholder/
   );
+});
+
+test("connects the first two projects to their own demo and source links", () => {
+  const projects = html.split('class="project-wrapper__text-title">').slice(1);
+  for (const [index, name, repository] of [
+    [0, "zhijia", "zhijia-list"],
+    [1, "business-agent", "chinook-business-agent"],
+  ]) {
+    const project = projects[index];
+    assert.equal(
+      (
+        project.match(
+          new RegExp(`href="assets/media/${name}-demo\\.mp4"`, "g")
+        ) || []
+      ).length,
+      2
+    );
+    assert.ok(
+      project.includes(`href="https://github.com/jiajia0820/${repository}"`)
+    );
+    const links = [...project.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>/g)].map(
+      (match) => match[0]
+    );
+    assert.equal(links.length, 3);
+    assert.ok(links.every((link) => /\btarget="_blank"/.test(link)));
+    assert.ok(links.every((link) => /\brel="noopener noreferrer"/.test(link)));
+    assert.ok(links.every((link) => !/aria-disabled|tabindex="-1"/.test(link)));
+  }
+  const thirdProject = projects[2].split("<!-- /END Project -->")[0];
+  assert.match(thirdProject, /智慧病区巡检/);
+  assert.doesNotMatch(thirdProject, /<a\b[^>]*\bhref=/);
 });
 
 test("uses approved real images without changing the original media proportions", () => {

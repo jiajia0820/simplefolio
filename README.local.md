@@ -1,7 +1,7 @@
 # 吕佳阳的 Simplefolio 第一版
 
 本版只套用 Simplefolio，保留原模板布局与配色。
-内容根据本次提供的主版简历提炼，视频与源码尚未接入。
+内容根据本次提供的主版简历提炼，前两个项目的演示视频与源码链接已接入。
 原模板说明仍保留在 `README.md`，许可证保留在 `LICENSE.md`。
 已接入用户确认的生活照、经营分析 Agent 截图、机器人照片及智家清单实机截图。
 
@@ -30,7 +30,8 @@ npm run build
 ```
 
 测试覆盖模板结构、占位状态、真实图片排版、资源路径、隐私检查和动画兜底。
-生产构建结束后自动运行 `scripts/verify-build.cjs`，检查四个 SVG 取景窗口和六个图片资源。
+生产构建结束后自动运行 `scripts/verify-build.cjs`，
+检查四个 SVG 取景窗口、六个图片资源和两个完整的视频文件。
 产物位于被 Git 忽略的 `dist/`。
 本轮未推送 GitHub，未配置远程部署。
 
@@ -58,7 +59,7 @@ python -m http.server 4173 --bind 127.0.0.1 --directory dist
 | `src/index.html`                                             | 首屏、简介、三个项目、联系与页脚                |
 | `src/scripts/scrollReveal.js`                                | 原版动画及静态显示兜底                          |
 | `docs/superpowers/specs/2026-11-16-simplefolio-v1-design.md` | 本次范围与验收计划                              |
-| `src/assets/media/`                                          | 用户确认的生活照及项目原图                      |
+| `src/assets/media/`                                          | 用户确认的生活照、项目原图和两段演示视频        |
 | `.htmlnanorc`                                                | 保留 SVG 取景窗口，防止生产优化后响应式图片裁切 |
 | `scripts/verify-build.cjs`                                   | 构建产物中的图片引用与 SVG 坐标验证             |
 | `docs/superpowers/specs/2026-11-17-real-media.md`            | 真实图片接入范围与验收                          |
@@ -81,10 +82,19 @@ python -m http.server 4173 --bind 127.0.0.1 --directory dist
 - 全部 SCSS、倾斜效果脚本及入场动画参数仍与 `v0.0.0-template` 一致。
 - 七个媒体原图均检查过 EXIF，无 GPS 元数据。
 
+`v0.1.3-project-demos` 接入演示与源码：
+
+- 智家清单的“演示视频”和项目图片链接到 `zhijia-demo.mp4`，
+  “查看源码”链接到用户提供的 `jiajia0820/zhijia-list` 仓库。
+- 经营分析问数 Agent 同样接入 `business-agent-demo.mp4` 与
+  `jiajia0820/chinook-business-agent` 仓库。
+- 视频点击后在新标签页用浏览器原生播放器打开，首页未增加播放器、弹窗或预加载配置。
+- 两个 MP4 原样复制，未剪辑或转码；本地副本与用户原文件的 SHA-256 一致。
+- 智慧病区巡检的演示与源码仍保持待补充，全部原模板样式继续保持不变。
+
 ## 等待补充的材料
 
-- 项目演示视频或可公开播放地址。
-- 项目源码仓库地址。
+- 第三个项目的演示视频和源码地址，如后续有可公开材料再补充。
 - 可用于公开下载的简历版本。
 - 需要公开展示的邮箱或其他联系方式。
 
@@ -103,7 +113,8 @@ python -m http.server 4173 --bind 127.0.0.1 --directory dist
 | `v0.0.0-template`        | 完全未改动的 Simplefolio 模板                  |
 | `v0.1.0-shell`           | 完成校验的个人网站第一版                       |
 | `v0.1.1-template-design` | 严格恢复原模板视觉的历史版本                   |
-| `v0.1.2-real-media`      | 保留模板设计，接入真实照片和项目截图的当前版本 |
+| `v0.1.2-real-media`      | 保留模板设计，接入真实照片和项目截图的历史版本 |
+| `v0.1.3-project-demos`   | 接入前两个项目演示视频与源码链接的当前版本     |
 
 先确认工作区状态：
 
@@ -126,7 +137,7 @@ git switch codex/simplefolio-v1
 比较两个版本：
 
 ```powershell
-git diff v0.1.1-template-design v0.1.2-real-media
+git diff v0.1.2-real-media v0.1.3-project-demos
 ```
 
 以上操作要求先保存或提交手头的改动。
