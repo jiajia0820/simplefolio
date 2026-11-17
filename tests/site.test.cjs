@@ -57,15 +57,32 @@ test("does not include private resume contacts or local document paths", () => {
   assert.doesNotMatch(html, /Your Name|Unknown Developer|Project Title/);
 });
 
-test("placeholder labels retain the original CTA font size", () => {
+test("placeholder labels use original anchor styling without custom CSS", () => {
   const styles = fs.readFileSync(
     path.join(root, "src/sass/components/_buttons.scss"),
     "utf8"
   );
-  assert.match(
-    styles,
-    /\.cta-placeholder\s*\{[^}]*font-size:\s*\$default-font-size/s
+  const anchors = [...html.matchAll(/<a\b[^>]*>/g)]
+    .map((match) => match[0])
+    .filter(
+      (tag) => /class="cta-btn\b/.test(tag) && /aria-disabled="true"/.test(tag)
+    );
+  assert.equal(anchors.length, 7);
+  assert.ok(anchors.every((tag) => !/\bhref=/.test(tag)));
+  assert.doesNotMatch(styles, /\.cta-placeholder/);
+  assert.doesNotMatch(
+    html,
+    /cta-placeholder|profile-placeholder|project-placeholder/
   );
+});
+
+test("retains the original sample images and footer design slots", () => {
+  assert.match(html, /src="assets\/profile\.jpg"/);
+  assert.equal((html.match(/src="assets\/project\.jpg"/g) || []).length, 3);
+  assert.equal((html.match(/class="github-button"/g) || []).length, 2);
+  assert.match(html, /fa-twitter fa-inverse/);
+  assert.match(html, /fa-linkedin fa-inverse/);
+  assert.match(html, /fa-github fa-inverse/);
 });
 
 function animationContext({ available = false, reducedMotion = false } = {}) {
