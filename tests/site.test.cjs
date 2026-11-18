@@ -40,6 +40,29 @@ test("includes expected section order, four project slots, and UI works gallery"
   );
 });
 
+test("uses the approved space poster in the rejected ticket slot", () => {
+  const gallery = html.split('<section id="ui-works"')[1].split("</section>")[0];
+  const cards = [...gallery.matchAll(/<article\b[\s\S]*?<\/article>/g)].map(
+    (match) => match[0]
+  );
+  const expectedImages = [
+    "ui-smartcook-brochure",
+    "ui-deji-facade",
+    "ui-space-poster",
+    "ui-stamp-logo",
+    "ui-deji-poster",
+    "ui-awakening-poster",
+  ];
+  assert.equal(cards.length, expectedImages.length);
+  for (const [index, name] of expectedImages.entries()) {
+    assert.ok(cards[index].includes(`src="assets/media/${name}.jpg"`));
+  }
+  assert.match(cards[2], /data-tag="PS 合成"/);
+  assert.match(cards[2], /width="1351"\s+height="1800"/);
+  assert.match(cards[2], /alt="太空探索主题 PS 合成海报"/);
+  assert.doesNotMatch(gallery, /ui-njupt-ticket|十五周年票券/);
+});
+
 test("keeps missing video, source, and resume assets explicitly unavailable", () => {
   assert.equal((html.match(/>视频待补充</g) || []).length, 2);
   assert.equal((html.match(/>源码待补充</g) || []).length, 1);

@@ -68,7 +68,7 @@ assert.equal(galleryImages.length, 6);
 for (const [index, name] of [
   "ui-smartcook-brochure",
   "ui-deji-facade",
-  "ui-njupt-ticket",
+  "ui-space-poster",
   "ui-stamp-logo",
   "ui-deji-poster",
   "ui-awakening-poster",
