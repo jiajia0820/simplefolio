@@ -30,7 +30,7 @@ test("includes expected section order, four project slots, and UI works gallery"
   );
   assert.match(html, /<html lang="zh-CN"/);
   assert.match(html, /吕佳阳/);
-  assert.match(html, /119 个评分单元/);
+  assert.match(html, /119\s+个评分单元/);
   assert.match(html, /声笺/);
   assert.equal((html.match(/<article class="ui-card"/g) || []).length, 6);
   assert.doesNotMatch(html, /data-placeholder="true"/);
@@ -40,8 +40,33 @@ test("includes expected section order, four project slots, and UI works gallery"
   );
 });
 
+test("keeps recruiting claims scoped to supplied evidence", () => {
+  const copy = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  assert.match(copy, /硕士在读.*2028 年 6 月毕业/);
+  assert.match(copy, /每周 5 天，可实习 6 个月/);
+
+  const projects = [...html.matchAll(/<p class="mb-4">([\s\S]*?)<\/p>/g)].map(
+    (match) => match[1].replace(/\s+/g, " ").trim()
+  );
+  assert.equal(projects.length, 4);
+  assert.match(projects[0], /4 人团队的发起人、产品与 AI 应用负责人/);
+  assert.match(projects[0], /规则定推荐，AI 做解释/);
+  assert.match(projects[0], /上线 6 周累计用户 2,300\+/);
+  assert.match(projects[1], /独立完成赛题 Demo 的产品与开发/);
+  assert.match(
+    projects[1],
+    /在自建的 119 个评分单元评测集（含多轮会话）上，准确率由 82\.4% 提升至 97\.5%/
+  );
+  assert.match(projects[2], /基于开源项目持续迭代/);
+  assert.match(projects[3], /驻场产品实习生/);
+  assert.match(projects[3], /5 台机器人试点 4 周/);
+  assert.match(projects[3], /后续在 2 个病区常态化运行/);
+});
+
 test("uses the approved space poster in the rejected ticket slot", () => {
-  const gallery = html.split('<section id="ui-works"')[1].split("</section>")[0];
+  const gallery = html
+    .split('<section id="ui-works"')[1]
+    .split("</section>")[0];
   const cards = [...gallery.matchAll(/<article\b[\s\S]*?<\/article>/g)].map(
     (match) => match[0]
   );
