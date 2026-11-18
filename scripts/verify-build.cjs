@@ -61,9 +61,10 @@ assert.equal(
   6
 );
 
-const galleryImages = [
-  ...html.matchAll(/<img\b[^>]*\bsrc="?([^"\s>]+)"?/gi),
-].map((match) => match[1]);
+const galleryImages = [...html.matchAll(/<img\b[^>]*>/gi)]
+  .map((match) => match[0])
+  .filter((tag) => /\bclass="?ui-card__img\b/i.test(tag))
+  .map((tag) => tag.match(/\bsrc="?([^"\s>]+)"?/i)[1]);
 assert.equal(galleryImages.length, 6);
 for (const [index, name] of [
   "ui-smartcook-brochure",
@@ -83,6 +84,64 @@ for (const [index, name] of [
   );
 }
 
+for (const [name, extension] of [
+  ["bonjour-logo", "png"],
+  ["xiaohongshu-logo", "ico"],
+]) {
+  const logoTag = [...html.matchAll(/<img\b[^>]*>/gi)]
+    .map((match) => match[0])
+    .find((tag) => tag.includes(name));
+  assert.ok(logoTag, `Missing social logo: ${name}`);
+  const src = logoTag.match(/\bsrc="([^"]+)"/)[1];
+  assert.match(src, new RegExp(`^/${name}\\.[a-f0-9]+\\.${extension}$`));
+  assert.ok(
+    fs.existsSync(path.join(output, src.slice(1))),
+    `Missing built logo: ${src}`
+  );
+}
+
+const resumeTag = html.match(/<a\b[^>]*\bhref="([^"]+\.pdf)"[^>]*>/i);
+assert.ok(resumeTag, "Missing approved resume PDF link");
+assert.match(resumeTag[0], /target="_blank"/);
+assert.match(resumeTag[0], /rel="noopener noreferrer"/);
+const resumeHref = resumeTag[1];
+assert.equal(resumeHref, "/assets/resume-aipm.pdf");
+assert.ok(
+  fs
+    .readFileSync(path.join(output, resumeHref.slice(1)))
+    .equals(
+      fs.readFileSync(path.resolve(__dirname, "../src/assets/resume-aipm.pdf"))
+    ),
+  "Resume PDF must remain the original unmodified attachment"
+);
+assert.doesNotMatch(html, /公开版简历待补充/);
+
+const wechatTag = html.match(/<a\b[^>]*\bdata-wechat-contact\b[^>]*>/i);
+assert.ok(wechatTag, "Missing approved WeChat contact link");
+const wechatHref = wechatTag[0].match(/\bhref="([^"]+)"/)[1];
+assert.equal(wechatHref, "/assets/media/wechat-contact.jpg");
+assert.ok(
+  fs
+    .readFileSync(path.join(output, wechatHref.slice(1)))
+    .equals(
+      fs.readFileSync(
+        path.resolve(__dirname, "../src/assets/media/wechat-contact.jpg")
+      )
+    ),
+  "WeChat QR must remain the original unmodified image"
+);
+const bonjourTag = html.match(/<a\b[^>]*\bdata-bonjour-code=[^>]*>/i);
+assert.ok(bonjourTag, "Missing Bonjour contact link");
+const bonjourHref = bonjourTag[0].match(/\bhref="([^"]+)"/)[1];
+assert.equal(bonjourHref, "/assets/bonjour.txt");
+assert.equal(
+  fs.readFileSync(path.join(output, bonjourHref.slice(1)), "utf8").trim(),
+  "#小程序://Bonjour/9cmOIHhYkqsPNHI"
+);
+assert.doesNotMatch(html, /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+assert.doesNotMatch(html, /mailto:|fa-envelope/i);
+assert.match(html, /href="https:\/\/xhslink\.cn\/o\/1y6ls6jVE2W"/);
+
 console.log(
-  "Production media verified: 5 SVG viewBoxes, 7 project/portrait images, 2 complete videos, and 6 UI gallery images."
+  "Production media verified: 5 SVG viewBoxes, 7 project/portrait images, 2 complete videos, 6 UI gallery images, original resume PDF, original WeChat QR, and Bonjour fallback."
 );

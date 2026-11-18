@@ -57,6 +57,13 @@
   }
 }
 
+.social-links__icon {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  align-self: center;
+}
+
 .back-to-top i {
   color: $white-color;
   margin: 1rem 0 $default-font-size;

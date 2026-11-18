@@ -7,7 +7,6 @@
   Github Repo: https://github.com/cobiwave/simplefolio/
   Readme: https://github.com/cobiwave/simplefolio/README.md
   -
-  For business & inquires, contact me -> jacobojavier98@gmail.com
 -->
 <!DOCTYPE html>
 <html lang="zh-CN" class="sr">
@@ -109,9 +108,11 @@
               <span class="d-flex mt-3">
                 <a
                   class="cta-btn cta-btn--resume"
-                  aria-disabled="true"
-                  tabindex="-1"
-                  >公开版简历待补充</a
+                  href="assets/resume-aipm.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="在新标签页查看吕佳阳的 AI 产品经理简历（PDF）"
+                  >查看简历</a
                 >
               </span>
             </div>
@@ -378,18 +379,6 @@
                     个病区常态化运行。这段经历让我更重视：先排清需求优先级，再把方案带到现场验证。
                   </p>
                 </div>
-                <a
-                  class="cta-btn cta-btn--hero"
-                  aria-disabled="true"
-                  tabindex="-1"
-                  >视频待补充</a
-                >
-                <a
-                  class="cta-btn text-color-main"
-                  aria-disabled="true"
-                  tabindex="-1"
-                  >源码待补充</a
-                >
               </div>
             </div>
             <div class="col-lg-8 col-sm-12">
@@ -616,12 +605,16 @@
             产品经理实习。欢迎从项目出发，聊用户、聊取舍，也聊下一步能一起做什么。
           </p>
           <a
-            rel="noreferrer"
-            target="_blank"
             class="cta-btn cta-btn--resume"
-            href="https://github.com/jiajia0820"
-            >到 GitHub 看我的实践</a
+            href="assets/media/wechat-contact.jpg"
+            data-wechat-contact
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="打开吕佳阳的微信二维码"
+            title="微信联系：打开二维码"
           >
+            <i class="fa fa-weixin" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
     </section>
@@ -639,15 +632,43 @@
           <i class="fa fa-angle-up fa-2x" aria-hidden="true"></i>
         </a>
         <div class="social-links">
-          <a aria-disabled="true" tabindex="-1" aria-label="Twitter 链接待补充">
-            <i class="fa fa-twitter fa-inverse"></i>
+          <a
+            href="assets/bonjour.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-bonjour-code="#小程序://Bonjour/9cmOIHhYkqsPNHI"
+            aria-label="复制 Bonjour 小程序口令，在微信中粘贴打开"
+            title="复制 Bonjour 小程序口令，在微信中粘贴打开"
+          >
+            <img
+              class="social-links__icon"
+              src="assets/media/bonjour-logo.png"
+              width="30"
+              height="30"
+              alt=""
+              data-bonjour-icon
+            />
+            <i
+              class="fa fa-check"
+              aria-hidden="true"
+              data-bonjour-copied
+              hidden
+            ></i>
           </a>
           <a
-            aria-disabled="true"
-            tabindex="-1"
-            aria-label="LinkedIn 链接待补充"
+            href="https://xhslink.cn/o/1y6ls6jVE2W"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="吕佳阳的小红书主页"
+            title="小红书"
           >
-            <i class="fa fa-linkedin fa-inverse"></i>
+            <img
+              class="social-links__icon"
+              src="assets/media/xiaohongshu-logo.ico"
+              width="30"
+              height="30"
+              alt=""
+            />
           </a>
           <a
             rel="noreferrer"
@@ -658,6 +679,8 @@
             <i class="fa fa-github fa-inverse"></i>
           </a>
         </div>
+
+        <p class="visually-hidden" role="status" data-contact-status></p>
 
         <hr />
 

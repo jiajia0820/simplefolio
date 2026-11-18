@@ -88,18 +88,33 @@ test("uses the approved space poster in the rejected ticket slot", () => {
   assert.doesNotMatch(gallery, /ui-njupt-ticket|十五周年票券/);
 });
 
-test("keeps missing video, source, and resume assets explicitly unavailable", () => {
-  assert.equal((html.match(/>视频待补充</g) || []).length, 2);
-  assert.equal((html.match(/>源码待补充</g) || []).length, 1);
-  assert.match(html, /公开版简历待补充/);
+test("keeps unavailable project videos explicit without fake players", () => {
+  assert.equal((html.match(/>视频待补充</g) || []).length, 1);
+  assert.equal((html.match(/>源码待补充</g) || []).length, 0);
   assert.doesNotMatch(html, /<(?:video|iframe)\b/);
   assert.doesNotMatch(html, /(?:src|href)="(?:|#!)"/);
   assert.doesNotMatch(html, /href="assets\/resume\.pdf"/);
 });
 
+test("opens the approved resume PDF from the original about-section button", () => {
+  const about = html.split('<section id="about">')[1].split("</section>")[0];
+  const resume = about.match(
+    /<a\b[^>]*href="assets\/resume-aipm\.pdf"[^>]*>查看简历<\/a/
+  );
+  assert.ok(resume, "Missing working resume button");
+  assert.match(resume[0], /class="cta-btn cta-btn--resume"/);
+  assert.match(resume[0], /target="_blank"/);
+  assert.match(resume[0], /rel="noopener noreferrer"/);
+  assert.doesNotMatch(resume[0], /aria-disabled|tabindex="-1"/);
+  assert.doesNotMatch(html, /公开版简历待补充/);
+  const pdf = fs.readFileSync(path.join(root, "src/assets/resume-aipm.pdf"));
+  assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+  assert.match(pdf.subarray(-1024).toString(), /%%EOF/);
+});
+
 test("all local assets and in-page links exist", () => {
   for (const [, attribute, value] of html.matchAll(/\b(src|href)="([^"]+)"/g)) {
-    if (/^(?:https?:|mailto:)/.test(value)) continue;
+    if (/^https?:/.test(value)) continue;
     if (value.startsWith("#")) {
       assert.ok(
         html.includes(`id="${value.slice(1)}"`),
@@ -114,9 +129,10 @@ test("all local assets and in-page links exist", () => {
   }
 });
 
-test("does not include private resume contacts or local document paths", () => {
+test("publishes no email address, email entry, private phone or paths", () => {
   assert.doesNotMatch(html, /\b1[3-9]\d{9}\b/);
-  assert.doesNotMatch(html, /@njupt\.edu\.cn/i);
+  assert.doesNotMatch(html, /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  assert.doesNotMatch(html, /mailto:|fa-envelope/i);
   assert.doesNotMatch(html, /[EF]:[\\/]/);
   assert.doesNotMatch(html, /Your Name|Unknown Developer|Project Title/);
 });
@@ -131,7 +147,7 @@ test("placeholder labels use original anchor styling without custom CSS", () => 
     .filter(
       (tag) => /class="cta-btn\b/.test(tag) && /aria-disabled="true"/.test(tag)
     );
-  assert.equal(anchors.length, 4);
+  assert.equal(anchors.length, 1);
   assert.ok(anchors.every((tag) => !/\bhref=/.test(tag)));
   assert.doesNotMatch(styles, /\.cta-placeholder/);
   assert.doesNotMatch(
@@ -181,6 +197,7 @@ test("connects projects to their respective demo and source links", () => {
   const fourthProject = projects[3].split("<!-- /END Project -->")[0];
   assert.match(fourthProject, /智慧病区巡检/);
   assert.doesNotMatch(fourthProject, /<a\b[^>]*\bhref=/);
+  assert.doesNotMatch(fourthProject, /视频待补充|源码待补充|class="cta-btn/);
 });
 
 test("uses approved real images without changing the original media proportions", () => {
@@ -212,9 +229,38 @@ test("shows three complete smart-home screens in one landscape frame", () => {
 
 test("retains the original footer design slots", () => {
   assert.equal((html.match(/class="github-button"/g) || []).length, 2);
-  assert.match(html, /fa-twitter fa-inverse/);
-  assert.match(html, /fa-linkedin fa-inverse/);
+  const social = html.split('class="social-links">')[1].split("</div>")[0];
+  assert.equal((social.match(/<a\b/g) || []).length, 3);
+  assert.match(social, /Bonjour/);
+  assert.match(social, /小红书/);
+  assert.match(social, /src="assets\/media\/bonjour-logo\.png"/);
+  assert.match(social, /src="assets\/media\/xiaohongshu-logo\.ico"/);
+  assert.doesNotMatch(social, /social-links__label|>Bonjour<|>小红书</);
+  assert.doesNotMatch(social, /fa-twitter|fa-linkedin|aria-disabled/);
   assert.match(html, /fa-github fa-inverse/);
+});
+
+test("keeps only WeChat in the contact section and connects the social icons", () => {
+  const contact = html
+    .split('<section id="contact">')[1]
+    .split("</section>")[0];
+  assert.equal((contact.match(/<a\b/g) || []).length, 1);
+  assert.match(contact, /href="assets\/media\/wechat-contact\.jpg"/);
+  assert.match(contact, /data-wechat-contact/);
+  assert.match(contact, /fa-weixin/);
+  assert.doesNotMatch(contact, />邮件联系<|>微信联系</);
+  assert.doesNotMatch(contact, /github\.com/);
+  assert.match(html, /href="https:\/\/xhslink\.cn\/o\/1y6ls6jVE2W"/);
+  assert.match(
+    html,
+    /data-bonjour-code="#小程序:\/\/Bonjour\/9cmOIHhYkqsPNHI"/
+  );
+  assert.doesNotMatch(html, /href="#小程序:/);
+  assert.equal(
+    fs.readFileSync(path.join(root, "src/assets/bonjour.txt"), "utf8").trim(),
+    "#小程序://Bonjour/9cmOIHhYkqsPNHI"
+  );
+  assert.match(html, /role="status" data-contact-status/);
 });
 
 function animationContext({ available = false, reducedMotion = false } = {}) {
