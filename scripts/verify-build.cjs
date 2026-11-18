@@ -14,18 +14,20 @@ assert.deepEqual(viewBoxes, [
   [0, 0, 1600, 900],
   [0, 0, 1600, 900],
   [0, 0, 1600, 900],
+  [0, 0, 1600, 900],
 ]);
 
 const images = [...html.matchAll(/<image\b[^>]*\bhref="([^"]+)"/gi)].map(
   (match) => match[1]
 );
-assert.equal(images.length, 6);
+assert.equal(images.length, 7);
 for (const [index, name] of [
   "portrait-lifestyle",
   "zhijia-home",
   "zhijia-assessment",
   "zhijia-plan",
   "business-agent",
+  "shengjian-cover",
   "ward-robots",
 ].entries()) {
   assert.match(images[index], new RegExp(`^/${name}\\.[a-f0-9]+\\.(jpg|png)$`));
@@ -51,6 +53,36 @@ for (const [index, name] of ["zhijia", "business-agent"].entries()) {
     `Incomplete production video: ${videos[index]}`
   );
 }
+
+assert.match(html, /id="?ui-works"?/i);
+assert.match(html, /data-gallery-track/i);
+assert.equal(
+  (html.match(/<article\b[^>]*\bclass="?ui-card"?/gi) || []).length,
+  6
+);
+
+const galleryImages = [
+  ...html.matchAll(/<img\b[^>]*\bsrc="?([^"\s>]+)"?/gi),
+].map((match) => match[1]);
+assert.equal(galleryImages.length, 6);
+for (const [index, name] of [
+  "ui-smartcook-brochure",
+  "ui-deji-facade",
+  "ui-njupt-ticket",
+  "ui-stamp-logo",
+  "ui-deji-poster",
+  "ui-awakening-poster",
+].entries()) {
+  assert.match(
+    galleryImages[index],
+    new RegExp(`^/${name}\\.[a-f0-9]+\\.jpg$`)
+  );
+  assert.ok(
+    fs.existsSync(path.join(output, galleryImages[index].slice(1))),
+    `Missing production UI work image: ${galleryImages[index]}`
+  );
+}
+
 console.log(
-  "Production media verified: 4 SVG viewBoxes, 6 images, and 2 complete videos."
+  "Production media verified: 5 SVG viewBoxes, 7 project/portrait images, 2 complete videos, and 6 UI gallery images."
 );

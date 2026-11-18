@@ -58,6 +58,20 @@ export const targetElements = [
     },
   },
   {
+    element: ".ui-works__header",
+    animation: {
+      delay: 400,
+      origin: "bottom",
+    },
+  },
+  {
+    element: ".ui-works__rail",
+    animation: {
+      delay: 650,
+      origin: "bottom",
+    },
+  },
+  {
     element: ".contact-wrapper",
     animation: {
       delay: 800,

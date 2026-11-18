@@ -4,17 +4,24 @@
 所有原图均直接复制，未改写像素、修脸、换背景或重绘界面文字。
 原图没有 GPS 元数据。
 
-| 文件                      | 用途                                                    |
-| ------------------------- | ------------------------------------------------------- |
-| `portrait-lifestyle.jpg`  | 用户选定的第 4 张生活照                                 |
-| `business-agent.png`      | 经营分析问数 Agent 的问答及证据溯源界面                 |
-| `ward-robots.jpg`         | 两台巡检机器人的实物照片                                |
-| `zhijia-home.jpg`         | 智家清单首页                                            |
-| `zhijia-assessment.jpg`   | 六题需求测评                                            |
-| `zhijia-plan.jpg`         | 方案预算与场景包                                        |
-| `zhijia-detail.jpg`       | 场景包解释和方案档位，本版保留备选，未展示              |
-| `zhijia-demo.mp4`         | 智家清单演示视频，约 2 分 26 秒，432 × 960              |
-| `business-agent-demo.mp4` | 经营分析问数 Agent 演示视频，约 1 分 20 秒，1920 × 1080 |
+| 文件                        | 用途                                                            |
+| --------------------------- | --------------------------------------------------------------- |
+| `portrait-lifestyle.jpg`    | 用户选定的第 4 张生活照                                         |
+| `business-agent.png`        | 经营分析问数 Agent 的问答及证据溯源界面                         |
+| `ward-robots.jpg`           | 两台巡检机器人的实物照片                                        |
+| `zhijia-home.jpg`           | 智家清单首页                                                    |
+| `zhijia-assessment.jpg`     | 六题需求测评                                                    |
+| `zhijia-plan.jpg`           | 方案预算与场景包                                                |
+| `zhijia-detail.jpg`         | 场景包解释和方案档位，本版保留备选，未展示                      |
+| `zhijia-demo.mp4`           | 智家清单演示视频，约 2 分 26 秒，432 × 960                      |
+| `business-agent-demo.mp4`   | 经营分析问数 Agent 演示视频，约 1 分 20 秒，1920 × 1080         |
+| `shengjian-cover.png`       | 声笺仓库公开封面图（源自 `shengjian-xiaoyuzhou/public/og.png`） |
+| `ui-smartcook-brochure.jpg` | 掌勺 AI 食材识别与营养社区产品画册内页（源自 `宣传手册2.jpg`）  |
+| `ui-deji-facade.jpg`        | 德基艺术博物馆外立面视觉呈现（源自 `d2.png`，裁去外围截图暗边） |
+| `ui-njupt-ticket.jpg`       | 十五周年晚会主副券门票设计（源自 `1.png.jpg`）                  |
+| `ui-stamp-logo.jpg`         | 十五周年纪念邮票图形标识（源自 `方形logo.png`，白底居中导出）   |
+| `ui-deji-poster.jpg`        | 德基艺术博物馆花卉静物展倒计时海报（源自 `d3.jpg`）             |
+| `ui-awakening-poster.jpg`   | 觉醒年代主题概念海报（源自 `PS1.png`）                          |
 
 排版在 `src/index.html` 中完成，使用原生 SVG 图片容器：
 

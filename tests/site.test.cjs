@@ -9,23 +9,39 @@ const html = fs.readFileSync(path.join(root, "src/index.html"), "utf8");
 const animationSource = fs
   .readFileSync(path.join(root, "src/scripts/scrollReveal.js"), "utf8")
   .replace("export default function", "function");
+const gallerySource = fs
+  .readFileSync(path.join(root, "src/scripts/uiGallery.js"), "utf8")
+  .replace("export default function", "function");
 
-test("retains the original Simplefolio section order and three project slots", () => {
+test("includes expected section order, four project slots, and UI works gallery", () => {
   const sections = [...html.matchAll(/<section id="([^"]+)"/g)].map(
     (match) => match[1]
   );
-  assert.deepEqual(sections, ["hero", "about", "projects", "contact"]);
+  assert.deepEqual(sections, [
+    "hero",
+    "about",
+    "projects",
+    "ui-works",
+    "contact",
+  ]);
   assert.equal(
     (html.match(/class="project-wrapper__text-title"/g) || []).length,
-    3
+    4
   );
   assert.match(html, /<html lang="zh-CN"/);
   assert.match(html, /吕佳阳/);
   assert.match(html, /119 个评分单元/);
+  assert.match(html, /声笺/);
+  assert.equal((html.match(/<article class="ui-card"/g) || []).length, 6);
+  assert.doesNotMatch(html, /data-placeholder="true"/);
+  assert.equal(
+    (html.match(/src="assets\/media\/ui-[a-z0-9-]+\.jpg"/g) || []).length,
+    6
+  );
 });
 
 test("keeps missing video, source, and resume assets explicitly unavailable", () => {
-  assert.equal((html.match(/>视频待补充</g) || []).length, 1);
+  assert.equal((html.match(/>视频待补充</g) || []).length, 2);
   assert.equal((html.match(/>源码待补充</g) || []).length, 1);
   assert.match(html, /公开版简历待补充/);
   assert.doesNotMatch(html, /<(?:video|iframe)\b/);
@@ -67,7 +83,7 @@ test("placeholder labels use original anchor styling without custom CSS", () => 
     .filter(
       (tag) => /class="cta-btn\b/.test(tag) && /aria-disabled="true"/.test(tag)
     );
-  assert.equal(anchors.length, 3);
+  assert.equal(anchors.length, 4);
   assert.ok(anchors.every((tag) => !/\bhref=/.test(tag)));
   assert.doesNotMatch(styles, /\.cta-placeholder/);
   assert.doesNotMatch(
@@ -76,7 +92,7 @@ test("placeholder labels use original anchor styling without custom CSS", () => 
   );
 });
 
-test("connects the first two projects to their own demo and source links", () => {
+test("connects projects to their respective demo and source links", () => {
   const projects = html.split('class="project-wrapper__text-title">').slice(1);
   for (const [index, name, repository] of [
     [0, "zhijia", "zhijia-list"],
@@ -102,16 +118,29 @@ test("connects the first two projects to their own demo and source links", () =>
     assert.ok(links.every((link) => /\brel="noopener noreferrer"/.test(link)));
     assert.ok(links.every((link) => !/aria-disabled|tabindex="-1"/.test(link)));
   }
-  const thirdProject = projects[2].split("<!-- /END Project -->")[0];
-  assert.match(thirdProject, /智慧病区巡检/);
-  assert.doesNotMatch(thirdProject, /<a\b[^>]*\bhref=/);
+  const shengjianProject = projects[2].split("<!-- /END Project -->")[0];
+  assert.match(shengjianProject, /声笺/);
+  assert.equal(
+    (
+      shengjianProject.match(
+        /href="https:\/\/github\.com\/jiajia0820\/shengjian-xiaoyuzhou"/g
+      ) || []
+    ).length,
+    2
+  );
+  assert.match(shengjianProject, />视频待补充</);
+
+  const fourthProject = projects[3].split("<!-- /END Project -->")[0];
+  assert.match(fourthProject, /智慧病区巡检/);
+  assert.doesNotMatch(fourthProject, /<a\b[^>]*\bhref=/);
 });
 
 test("uses approved real images without changing the original media proportions", () => {
   assert.match(html, /viewBox="300 800 700 700"/);
   assert.match(html, /href="assets\/media\/portrait-lifestyle\.jpg"/);
-  assert.equal((html.match(/viewBox="0 0 1600 900"/g) || []).length, 3);
+  assert.equal((html.match(/viewBox="0 0 1600 900"/g) || []).length, 4);
   assert.match(html, /href="assets\/media\/business-agent\.png"/);
+  assert.match(html, /href="assets\/media\/shengjian-cover\.png"/);
   assert.match(html, /href="assets\/media\/ward-robots\.jpg"/);
   assert.doesNotMatch(html, /(?:src|href)="assets\/(?:profile|project)\.jpg"/);
 });
@@ -194,4 +223,149 @@ test("retains the original reveal behavior when animations are available", () =>
   assert.equal(reveals[0][0], ".hero-title");
   assert.equal(reveals[0][1].distance, "30px");
   assert.equal(reveals[0][1].delay, 100);
+});
+
+test("horizontal UI gallery updates controls, progress, and lightbox state", () => {
+  const makeElement = (extra = {}) => {
+    const listeners = {};
+    const attrs = {};
+    const classes = new Set();
+    return {
+      style: {},
+      hidden: Boolean(extra.hidden),
+      disabled: false,
+      textContent: extra.textContent || "",
+      alt: extra.alt || "",
+      scrollLeft: 0,
+      clientWidth: extra.clientWidth || 600,
+      scrollWidth: extra.scrollWidth || 1800,
+      addEventListener: (type, fn) => {
+        listeners[type] = listeners[type] || [];
+        listeners[type].push(fn);
+      },
+      emit: (type, event = {}) => {
+        for (const fn of listeners[type] || []) {
+          fn({ preventDefault() {}, ...event });
+        }
+      },
+      setAttribute: (k, v) => {
+        attrs[k] = String(v);
+      },
+      getAttribute: (k) => attrs[k] ?? extra[k] ?? null,
+      removeAttribute: (k) => {
+        delete attrs[k];
+      },
+      classList: {
+        add: (c) => classes.add(c),
+        remove: (c) => classes.delete(c),
+        contains: (c) => classes.has(c),
+      },
+      focus: () => {},
+      ...extra,
+    };
+  };
+
+  const track = makeElement({ clientWidth: 500, scrollWidth: 1500 });
+  const prevBtn = makeElement();
+  const nextBtn = makeElement();
+  const progressBar = makeElement();
+  const statusEl = makeElement();
+  const realImg = makeElement({
+    src: "assets/media/ui-smartcook-brochure.jpg",
+    alt: "产品画册",
+  });
+  const secondImg = makeElement({
+    src: "assets/media/ui-deji-facade.jpg",
+    alt: "幕墙视觉",
+  });
+  const cardWithImg = makeElement({
+    "data-tag": "产品视觉",
+    querySelector: (sel) => {
+      if (sel === "img.ui-card__img") return realImg;
+      if (sel === ".ui-card__title") return { textContent: "掌勺产品画册" };
+      return null;
+    },
+  });
+  const secondCard = makeElement({
+    "data-tag": "空间导视",
+    querySelector: (sel) => {
+      if (sel === "img.ui-card__img") return secondImg;
+      if (sel === ".ui-card__title") return { textContent: "德基幕墙视觉" };
+      return null;
+    },
+  });
+  const lightboxImg = makeElement();
+  const lightboxCaption = makeElement();
+  const lightboxClose = makeElement();
+  const lightboxPrev = makeElement();
+  const lightboxNext = makeElement();
+  const lightbox = makeElement({
+    hidden: true,
+    querySelector: (sel) => {
+      if (sel === "[data-lightbox-img]") return lightboxImg;
+      if (sel === "[data-lightbox-caption]") return lightboxCaption;
+      if (sel === "[data-lightbox-close]") return lightboxClose;
+      if (sel === "[data-lightbox-prev]") return lightboxPrev;
+      if (sel === "[data-lightbox-next]") return lightboxNext;
+      return null;
+    },
+  });
+
+  const section = {
+    querySelector: (sel) => {
+      if (sel === "[data-gallery-track]") return track;
+      if (sel === "[data-gallery-prev]") return prevBtn;
+      if (sel === "[data-gallery-next]") return nextBtn;
+      if (sel === "[data-gallery-progress]") return progressBar;
+      if (sel === "[data-gallery-status]") return statusEl;
+      return null;
+    },
+    querySelectorAll: (sel) =>
+      sel === ".ui-card" ? [cardWithImg, secondCard] : [],
+  };
+
+  const rootDoc = makeElement({
+    querySelector: (sel) => {
+      if (sel === "#ui-works") return section;
+      if (sel === "[data-gallery-lightbox]") return lightbox;
+      return null;
+    },
+  });
+
+  const context = { window: makeElement(), document: rootDoc };
+  vm.createContext(context);
+  vm.runInContext(gallerySource, context);
+  const api = context.initUiGallery(rootDoc);
+
+  assert.ok(api);
+  assert.equal(prevBtn.disabled, true);
+  assert.equal(nextBtn.disabled, false);
+  assert.equal(statusEl.textContent, "01 / 02");
+
+  nextBtn.emit("click");
+  assert.ok(track.scrollLeft > 0);
+  assert.equal(prevBtn.disabled, false);
+
+  track.emit("keydown", { key: "End" });
+  assert.equal(track.scrollLeft, 1000);
+  assert.equal(nextBtn.disabled, true);
+  assert.equal(statusEl.textContent, "02 / 02");
+
+  cardWithImg.emit("click");
+  assert.equal(lightbox.hidden, false);
+  assert.equal(
+    lightboxImg.getAttribute("src"),
+    "assets/media/ui-smartcook-brochure.jpg"
+  );
+  assert.equal(lightboxCaption.textContent, "产品视觉 · 掌勺产品画册");
+
+  lightboxNext.emit("click");
+  assert.equal(
+    lightboxImg.getAttribute("src"),
+    "assets/media/ui-deji-facade.jpg"
+  );
+  assert.equal(lightboxCaption.textContent, "空间导视 · 德基幕墙视觉");
+
+  rootDoc.emit("keydown", { key: "Escape" });
+  assert.equal(lightbox.hidden, true);
 });
